@@ -25,7 +25,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         'noplaylist': True,
         'nocheckcertificate': True,
         'ignoreerrors': False,
-        'logtostderr': False,
+        'logtostderr': True,
         'quiet': True,
         'no_warnings': True,
         'default_search': 'auto',

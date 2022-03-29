@@ -52,6 +52,8 @@ class VoiceState:
     @volume.setter
     def volume(self, value: float):
         self._volume = value
+        if self.is_playing:
+            self.current.source.volume = self._volume
 
     @property
     def is_playing(self):
@@ -172,11 +174,12 @@ class Music(commands.Cog):
         if not ctx.voice_state.is_playing:
             return await ctx.send('Сейчас музыка не играет, мастер. Можете включить.')
 
-        if 0 > volume > 100:
+        if 0 <= volume <= 100:
+            ctx.voice_state.volume = volume / 100
+            return await ctx.send('Громкость изменена на {}%'.format(volume))
+        else:
             return await ctx.send('Громкость должна быть в диапазоне от 0 до 100')
 
-        ctx.voice_state.volume = volume / 100
-        await ctx.send('Громкость изменена на {}%'.format(volume))
 
     @commands.command(name='now', aliases=['current', 'playing'])
     async def _now(self, ctx: commands.Context):
@@ -313,6 +316,8 @@ class Music(commands.Cog):
                 source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
             except YTDLError as e:
                 await ctx.send('Произошла ошибка при обработке этого запроса: {}'.format(str(e)))
+            except Exception as e:
+                await ctx.send('Произошла ошибка ээ: '.format(str(e)))
             else:
                 song = Song(source)
 
